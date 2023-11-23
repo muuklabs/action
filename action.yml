@@ -1,0 +1,67 @@
+name: Integrate MuukTest E2E
+description: Execute E2E MuukTest on Github Actions.
+inputs:
+  muuk-key:
+    description: Key from your MuukTest account. Download from Portal.
+    required: true
+  tag-property:
+    description: Either you want to run a single test tag or a set of test by hashtag.
+    required: true
+  tag-value:
+    description: Value according the tag type selected. 
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Pass Inputs to Shell
+      run: |
+          echo "MUUKTEST_KEY=${{ inputs.muuk-key }}" >> $GITHUB_ENV
+          echo "TAG_PROPERTY=${{ inputs.tag-property }}" >> $GITHUB_ENV
+          echo "TAG_VALUE=${{ inputs.tag-value }}" >> $GITHUB_ENV
+          mkdir -p executor
+      shell: bash
+    - name: Installing dependencies
+      run: |
+          cd executor
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates curl gnupg
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+          NODE_MAJOR=20
+          echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+          sudo apt-get install nodejs -y
+          node -v
+          sudo apt-get install gcc g++ make
+          sudo apt-get install -y unzip
+      shell: bash
+    - name: Retrieve MuukTest config files and Test scripts
+      run: |
+          cd executor
+          printf '{ "key": "%s"}' $MUUKTEST_KEY > file.json
+          cat file.json
+          curl -H  "Content-Type: application/json" -X POST -d @file.json 'https://portal.muuktest.com:8081/generate_token_executer' -o "token.json"
+          curl -X POST https://portal.muuktest.com:8081/api/v1/downloadpwfiles -k -d @file.json -H "Content-Type: application/json" -o ./config.zip
+          unzip -o config.zip -d .
+          TOKEN=$(jq --raw-output .token token.json)
+          printf "Authorization: Bearer %s" $TOKEN > header.txt
+          MUUK_USERID_TOKEN=$(jq --raw-output .userId token.json)
+          printf '{"property": "%s", "value": ["%s"], "platform": "pw", "userId": "%s"}' $TAG_PROPERTY $TAG_VALUE $MUUK_USERID_TOKEN > body.json
+          curl -X POST https://portal.muuktest.com:8081/download_byproperty -H @header.txt -d @body.json -H "Content-Type: application/json" -o ./test.zip
+          [ -d "./test" ] && rm -r test
+          unzip -o test.zip -d ./test
+          ls -l
+      shell: bash
+    - name: Installing PW
+      run: |
+          cd executor
+          npm install -D @playwright/test
+          npx playwright install --with-deps chromium
+          npm install axios
+          npm install archiver
+      shell: bash
+    - name: Execute MuukTest E2E
+      run: |
+          cd executor
+          npx playwright test --workers=3 --project=chromium
+      shell: bash
