@@ -59,6 +59,9 @@ runs:
           npx playwright install --with-deps chromium
           npm install axios
           npm install archiver
+          npm install cheerio
+          npm install xpath
+          npm install @xmldom/xmldom
       shell: bash
     - name: Execute MuukTest E2E
       run: |
