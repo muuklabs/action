@@ -5,7 +5,7 @@ This action connects to ***MuukTest*** executor for Playwright using your *key.p
 
 ## How to use
 
-Add the Muuk action *muuklabs/action@v1.0.1* with required input parameters as part of your yaml configuration on your CI/CD pipeline or create a new yaml configuration as suggested below:
+Add the Muuk action *muuklabs/action@v1.0.2* with required input parameters as part of your yaml configuration on your CI/CD pipeline or create a new yaml configuration as suggested below:
 
 ```
 on: [pull_request]
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Retrieve and execute MuukTest E2E
-        uses: muuklabs/action@v1.0.1
+        uses: muuklabs/action@v1.0.2
         with:
           muuk-key: ${{ secrets.SHIPYARD_API_TOKEN }}
           tag-property: ${{ vars.TAG_PROPERTY }}
