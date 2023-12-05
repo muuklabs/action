@@ -20,7 +20,7 @@ jobs:
       - name: Retrieve and execute MuukTest E2E
         uses: muuklabs/action@v1.0.2
         with:
-          muuk-key: ${{ secrets.SHIPYARD_API_TOKEN }}
+          muuk-key: ${{ secrets.MUUKTEST_TOKEN }}
           tag-property: ${{ vars.TAG_PROPERTY }}
           tag-value: ${{ vars.TAG_VALUE }}
 ```
