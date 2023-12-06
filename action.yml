@@ -10,6 +10,9 @@ inputs:
   tag-value:
     description: Value according the tag type selected. 
     required: true
+  base-url:
+    description: The URL to execute the tests against. If this input is not provided, tests are executed on their base URL, defined in MuuktTest.
+    required: false
 
 runs:
   using: composite
@@ -19,6 +22,7 @@ runs:
           echo "MUUKTEST_KEY=${{ inputs.muuk-key }}" >> $GITHUB_ENV
           echo "TAG_PROPERTY=${{ inputs.tag-property }}" >> $GITHUB_ENV
           echo "TAG_VALUE=${{ inputs.tag-value }}" >> $GITHUB_ENV
+          echo "BASE_TEST_URL=${{ inputs.base-url }}" >> $GITHUB_ENV
           mkdir -p executor
       shell: bash
     - name: Installing dependencies
@@ -51,6 +55,10 @@ runs:
           [ -d "./test" ] && rm -r test
           unzip -o test.zip -d ./test
           ls -l
+          if [ "$BASE_TEST_URL" == "" ]; then
+            echo "Base URL: " $BASE_TEST_URL
+            sed -i '/let baseurl/a\  baseurl = `'$BASE_TEST_URL'`;' ./test/TestSteps_*.spec.ts
+          fi
       shell: bash
     - name: Installing PW
       run: |
