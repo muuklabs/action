@@ -5,7 +5,7 @@ This action connects to ***MuukTest*** executor for Playwright using your *key.p
 
 ## How to use
 
-Add the Muuk action *muuklabs/action@v1.0.2* with required input parameters as part of your yaml configuration on your CI/CD pipeline or create a new yaml configuration as suggested below:
+Add the Muuk action *muuklabs/action@v1.0.3* with required input parameters as part of your yaml configuration on your CI/CD pipeline or create a new yaml configuration as suggested below:
 
 ```
 on: [pull_request]
