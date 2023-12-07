@@ -55,9 +55,9 @@ runs:
           [ -d "./test" ] && rm -r test
           unzip -o test.zip -d ./test
           ls -l
-          if [ "$BASE_TEST_URL" == "" ]; then
+          if [ "$BASE_TEST_URL" != "" ]; then
             echo "Base URL: " $BASE_TEST_URL
-            sed -i '/let baseurl/a\  baseurl = `'$BASE_TEST_URL'`;' ./test/TestSteps_*.spec.ts
+            sed -i '/let baseurl =/a\  baseurl = `'$BASE_TEST_URL'`;' ./test/TestSteps_*.spec.ts
           fi
       shell: bash
     - name: Installing PW
