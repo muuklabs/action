@@ -62,6 +62,7 @@ runs:
           npm install cheerio
           npm install xpath
           npm install @xmldom/xmldom
+          npm install @faker-js/faker
       shell: bash
     - name: Execute MuukTest E2E
       run: |
