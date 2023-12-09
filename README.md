@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Retrieve and execute MuukTest E2E
-        uses: muuklabs/action@v1.0.2
+        uses: muuklabs/action@v1.0.3
         with:
           muuk-key: ${{ secrets.MUUKTEST_TOKEN }}
           tag-property: ${{ vars.TAG_PROPERTY }}
