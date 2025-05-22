@@ -71,6 +71,7 @@ runs:
           npm install xpath
           npm install @xmldom/xmldom
           npm install @faker-js/faker
+          npm install otpauth
       shell: bash
     - name: Execute MuukTest E2E
       run: |
