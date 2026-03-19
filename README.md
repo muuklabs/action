@@ -1,6 +1,6 @@
 # Muuktest integration with Github Action
 
-This action connects to ***MuukTest*** executor for Playwright using your *key.pub*. Use this action to run E2E by tag propertyy and value on. More details about workflow see [GitHub Actions](https://docs.github.com/en/actions).
+This action connects to ***MuukTest*** executor for Playwright using your *key.pub*. Use this action to run E2E by tag property and value on. More details about workflow see [GitHub Actions](https://docs.github.com/en/actions).
 
 
 ## How to use
