@@ -13,6 +13,10 @@ inputs:
   base-url:
     description: The URL to execute the tests against. If this input is not provided, tests are executed on their base URL, defined in MuuktTest.
     required: false
+  workers:
+    description: Number of parallel workers for Playwright test execution.
+    required: false
+    default: '3'
 
 runs:
   using: composite
@@ -23,6 +27,7 @@ runs:
           echo "TAG_PROPERTY=${{ inputs.tag-property }}" >> $GITHUB_ENV
           echo "TAG_VALUE=${{ inputs.tag-value }}" >> $GITHUB_ENV
           echo "BASE_TEST_URL=${{ inputs.base-url }}" >> $GITHUB_ENV
+          echo "WORKERS=${{ inputs.workers }}" >> $GITHUB_ENV
           mkdir -p executor
       shell: bash
     - name: Installing dependencies
@@ -76,5 +81,5 @@ runs:
     - name: Execute MuukTest E2E
       run: |
           cd executor
-          npx playwright test --workers=3 --project=chromium
+          npx playwright test --workers=$WORKERS --project=chromium
       shell: bash
