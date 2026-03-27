@@ -23,11 +23,22 @@ runs:
   steps:
     - name: Pass Inputs to Shell
       run: |
+          # Validate workers value
+          WORKERS="${{ inputs.workers }}"
+          if [ "$WORKERS" -gt 10 ]; then
+            echo "Warning: Workers value $WORKERS exceeds recommended maximum of 10. Setting to 10."
+            WORKERS=10
+          elif [ "$WORKERS" -lt 1 ]; then
+            echo "Warning: Workers value must be at least 1. Setting to 1."
+            WORKERS=1
+          fi
+
+          # Write all environment variables
           echo "MUUKTEST_KEY=${{ inputs.muuk-key }}" >> $GITHUB_ENV
           echo "TAG_PROPERTY=${{ inputs.tag-property }}" >> $GITHUB_ENV
           echo "TAG_VALUE=${{ inputs.tag-value }}" >> $GITHUB_ENV
           echo "BASE_TEST_URL=${{ inputs.base-url }}" >> $GITHUB_ENV
-          echo "WORKERS=${{ inputs.workers }}" >> $GITHUB_ENV
+          echo "WORKERS=$WORKERS" >> $GITHUB_ENV
           mkdir -p executor
       shell: bash
     - name: Installing dependencies
