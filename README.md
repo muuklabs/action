@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v3
         
       - name: Execute MuukTest E2E tests
-        uses: muuklabs/action@v1
+        uses: muuklabs/action@v1.0.5
         with:
           muuk-key: ${{ secrets.MUUKTEST_KEY }}
           tag-property: ${{ vars.TAG_PROPERTY }}
@@ -58,7 +58,7 @@ jobs:
 
 ```yaml
 - name: Run E2E tests
-  uses: muuklabs/action@v1
+  uses: muuklabs/action@v1.0.5
   with:
     muuk-key: ${{ secrets.MUUKTEST_KEY }}
     tag-property: ${{ vars.TAG_PROPERTY }}
@@ -69,7 +69,7 @@ jobs:
 
 ```yaml
 - name: Run E2E tests on staging
-  uses: muuklabs/action@v1
+  uses: muuklabs/action@v1.0.5
   with:
     muuk-key: ${{ secrets.MUUKTEST_KEY }}
     tag-property: 'hashtag'
@@ -81,7 +81,7 @@ jobs:
 
 ```yaml
 - name: Run E2E tests with 5 parallel workers
-  uses: muuklabs/action@v1
+  uses: muuklabs/action@v1.0.5
   with:
     muuk-key: ${{ secrets.MUUKTEST_KEY }}
     tag-property: 'hashtag'
@@ -93,7 +93,7 @@ jobs:
 
 ```yaml
 - name: Run E2E tests with all options
-  uses: muuklabs/action@v1
+  uses: muuklabs/action@v1.0.5
   with:
     muuk-key: ${{ secrets.MUUKTEST_KEY }}
     tag-property: 'hashtag'
