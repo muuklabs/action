@@ -1,45 +1,137 @@
-# Muuktest integration with Github Action
+# MuukTest E2E Integration for GitHub Actions
 
-This action connects to ***MuukTest*** executor for Playwright using your *key.pub*. Use this action to run E2E by tag property and value on. More details about workflow see [GitHub Actions](https://docs.github.com/en/actions).
+Integrate MuukTest's E2E testing capabilities into your GitHub Actions workflows. This action automatically downloads your test scripts and configuration files from the MuukTest portal, sets up Playwright with all required dependencies, and executes your E2E tests.
 
+## Features
 
-## How to use
+- 🔐 Secure authentication with MuukTest portal using your API key
+- 🎯 Execute tests by tag or hashtag for flexible test selection
+- 🌐 Override base URL for testing different environments
+- ⚡ Configurable parallel workers for optimal test execution
+- 📊 Automatic test result reporting to MuukTest portal
+- 🔧 Zero-configuration Playwright setup with all dependencies
 
-Add the Muuk action *muuklabs/action@v1.0.4* with required input parameters as part of your yaml configuration on your CI/CD pipeline or create a new yaml configuration as suggested below:
+## Prerequisites
 
-```
-on: [pull_request]
+- A MuukTest account with test scripts configured
+- API key (`key.pub`) downloaded from your MuukTest portal Account tab
+- Tests tagged appropriately for CI/CD execution
+
+## Usage
+
+Add the MuukTest action to your GitHub Actions workflow:
+
+```yaml
+name: E2E Tests
+
+on: [pull_request, push]
 
 jobs:
-  muuktest-e2e-tests:
+  muuktest-e2e:
     runs-on: ubuntu-latest
-    name: Execute MuukTest E2E.
+    name: Run MuukTest E2E Tests
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Retrieve and execute MuukTest E2E
-        uses: muuklabs/action@v1.0.4
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Execute MuukTest E2E tests
+        uses: muuklabs/action@v1
         with:
-          muuk-key: ${{ secrets.MUUKTEST_TOKEN }}
+          muuk-key: ${{ secrets.MUUKTEST_KEY }}
           tag-property: ${{ vars.TAG_PROPERTY }}
           tag-value: ${{ vars.TAG_VALUE }}
-          base-url: (Optional)
 ```
 
-**Inputs**
-```
-muuk-key: Key value taken from key.pub file. Download this from Account tab in MuukTest Portal.
-tag-property: [tag/hashtag] Choose for either a single test 'tag' or a set of tests by 'hashtag'.
-tag-value: Value for property '#cicd'
-base-url: (Optional) URL to execute the E2E tests against. If not provided, tests are executed on their on base URL defined for each test on MuukTest portal. Set any public or local environment available for this CICD script.
+## Inputs
+
+| Input | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `muuk-key` | ✅ Yes | - | Your MuukTest API key from `key.pub` file. Download from the Account tab in MuukTest Portal. **Store this as a secret!** |
+| `tag-property` | ✅ Yes | - | Test selection mode: `tag` (single test) or `hashtag` (multiple tests by hashtag) |
+| `tag-value` | ✅ Yes | - | The tag or hashtag value to filter tests (e.g., `mytest` or `#cicd`) |
+| `base-url` | ❌ No | - | Override the base URL for test execution. If not provided, tests use their configured base URL from MuukTest portal |
+| `workers` | ❌ No | `3` | Number of parallel workers for Playwright test execution |
+
+## Examples
+
+### Basic Usage with Secrets and Variables
+
+```yaml
+- name: Run E2E tests
+  uses: muuklabs/action@v1
+  with:
+    muuk-key: ${{ secrets.MUUKTEST_KEY }}
+    tag-property: ${{ vars.TAG_PROPERTY }}
+    tag-value: ${{ vars.TAG_VALUE }}
 ```
 
-You could either set inputs by using variables as shown in 'How to use' section or set literals (or combination of both) as shown in the example:
+### Run Tests Against Staging Environment
 
-***Example*** 
+```yaml
+- name: Run E2E tests on staging
+  uses: muuklabs/action@v1
+  with:
+    muuk-key: ${{ secrets.MUUKTEST_KEY }}
+    tag-property: 'hashtag'
+    tag-value: '#smoke'
+    base-url: 'https://staging.example.com'
 ```
-        muuk-key: 'pbyhz1qmmar69yxnbaa72---'
-        tag-property: 'hashtag'
-        tag-value: '#cicd'
-        base-url: 'https://mycicd-public-local-domain'
+
+### Run Tests with Custom Worker Count
+
+```yaml
+- name: Run E2E tests with 5 parallel workers
+  uses: muuklabs/action@v1
+  with:
+    muuk-key: ${{ secrets.MUUKTEST_KEY }}
+    tag-property: 'hashtag'
+    tag-value: '#regression'
+    workers: '5'
 ```
+
+### Complete Example with All Parameters
+
+```yaml
+- name: Run E2E tests with all options
+  uses: muuklabs/action@v1
+  with:
+    muuk-key: ${{ secrets.MUUKTEST_KEY }}
+    tag-property: 'hashtag'
+    tag-value: '#cicd'
+    base-url: 'https://qa.example.com'
+    workers: '4'
+```
+
+## Setting Up Secrets and Variables
+
+### Required Secret
+
+In your GitHub repository, go to **Settings → Secrets and variables → Actions** and create:
+
+- `MUUKTEST_KEY`: Your MuukTest API key content from the `key.pub` file
+
+### Optional Variables
+
+You can also set repository variables for convenience:
+
+- `TAG_PROPERTY`: Default tag property (e.g., `hashtag`)
+- `TAG_VALUE`: Default tag value (e.g., `#cicd`)
+
+## How It Works
+
+1. **Authentication**: Connects to MuukTest portal using your API key
+2. **Download**: Retrieves test scripts and configuration files
+3. **Setup**: Installs Node.js, Playwright, and all required dependencies
+4. **Execute**: Runs your E2E tests with the specified parallel workers
+5. **Report**: Automatically sends test results back to MuukTest portal
+
+## Support
+
+For more information about MuukTest or to report issues:
+- 📖 [MuukTest Documentation](https://www.muuktest.com)
+- 🐛 [Report an Issue](https://github.com/muuklabs/action/issues)
+- 📧 Contact MuukTest support
+
+## License
+
+See [LICENSE](LICENSE) file for details.

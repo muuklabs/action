@@ -13,20 +13,37 @@ inputs:
   base-url:
     description: The URL to execute the tests against. If this input is not provided, tests are executed on their base URL, defined in MuuktTest.
     required: false
+  workers:
+    description: Number of parallel workers for Playwright test execution.
+    required: false
+    default: '3'
 
 runs:
   using: composite
   steps:
     - name: Pass Inputs to Shell
       run: |
+          # Write all environment variables
+          # Validate workers value
+          WORKERS="${{ inputs.workers }}"
+          if [ "$WORKERS" -gt 10 ]; then
+            echo "Warning: Workers value $WORKERS exceeds recommended maximum of 10. Setting to 10."
+            WORKERS=10
+          elif [ "$WORKERS" -lt 1 ]; then
+            echo "Warning: Workers value must be at least 1. Setting to 1."
+            WORKERS=1
+          fi
+          # Set environment variables for subsequent steps
           echo "MUUKTEST_KEY=${{ inputs.muuk-key }}" >> $GITHUB_ENV
           echo "TAG_PROPERTY=${{ inputs.tag-property }}" >> $GITHUB_ENV
           echo "TAG_VALUE=${{ inputs.tag-value }}" >> $GITHUB_ENV
           echo "BASE_TEST_URL=${{ inputs.base-url }}" >> $GITHUB_ENV
+          echo "WORKERS=$WORKERS" >> $GITHUB_ENV
           mkdir -p executor
       shell: bash
     - name: Installing dependencies
       run: |
+          # Install Node.js and other dependencies
           cd executor
           sudo apt-get update
           sudo apt-get install -y ca-certificates curl gnupg
@@ -41,6 +58,7 @@ runs:
       shell: bash
     - name: Retrieve MuukTest config files and Test scripts
       run: |
+          # Retrieve MuukTest config files and Test scripts
           cd executor
           printf '{ "key": "%s"}' $MUUKTEST_KEY > file.json
           cat file.json
@@ -62,6 +80,7 @@ runs:
       shell: bash
     - name: Installing PW
       run: |
+          # Install Playwright and other dependencies
           cd executor
           npm install -D @playwright/test
           npx playwright install --with-deps chromium
@@ -75,6 +94,7 @@ runs:
       shell: bash
     - name: Execute MuukTest E2E
       run: |
+          # Execute MuukTest E2E tests with Playwright
           cd executor
-          npx playwright test --workers=3 --project=chromium
+          npx playwright test --workers=$WORKERS --project=chromium
       shell: bash
